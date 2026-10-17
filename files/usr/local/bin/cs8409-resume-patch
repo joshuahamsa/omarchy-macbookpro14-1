@@ -1,0 +1,20 @@
+#!/bin/bash
+# MacBookPro14,1: re-apply the CS8409 resume fix (redo the boot-time amp setup
+# after S3) to the snd-hda-macbookpro DKMS source. Run by the pacman hook
+# 60-cs8409-resume-patch.hook before 70-dkms-install rebuilds the module.
+# Upstream PR: https://github.com/davidjo/snd_hda_macbookpro/pull/198
+PATCH=/usr/local/share/macbook-fixes/cs8409-resume.diff
+
+for f in /usr/src/snd-hda-macbookpro-*/patch_cirrus/cirrus_apple.h; do
+  [[ -f $f ]] || continue
+  if grep -q "local fix (MacBookPro14,1)" "$f"; then
+    echo "cs8409-resume-patch: $f already patched"
+  elif awk '/^static int cs_8409_apple_resume/,/^}/' "$f" | grep -q "cs_8409_boot_setup("; then
+    echo "cs8409-resume-patch: upstream resume already re-runs boot setup, skipping $f"
+  elif patch --dry-run -s -N "$f" < "$PATCH" >/dev/null; then
+    patch -s -N --no-backup-if-mismatch "$f" < "$PATCH" && echo "cs8409-resume-patch: patched $f"
+  else
+    echo "cs8409-resume-patch: WARNING: patch no longer applies to $f; speakers may be silent after sleep" >&2
+  fi
+done
+exit 0

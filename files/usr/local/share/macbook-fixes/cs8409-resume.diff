@@ -1,0 +1,26 @@
+--- cirrus_apple.h.orig	2026-10-17 09:40:13.332669687 -0700
++++ cirrus_apple.h	2026-10-17 09:40:13.440687908 -0700
+@@ -1445,12 +1445,23 @@
+ 	return 0;
+ }
+ 
++static int cs_8409_boot_setup(struct hda_codec *codec);
++
+ static int cs_8409_apple_resume(struct hda_codec *codec)
+ {
++        struct cs8409_apple_spec *spec = codec->spec;
+         myprintk("snd_hda_intel: cs_8409_apple_resume\n");
+         // code copied from default resume ops
+         snd_hda_codec_init(codec);       
+ 	snd_hda_regmap_sync(codec);
++        // local fix (MacBookPro14,1): S3 powers off the codec and amps, so
++        // redo the boot-time amp setup and force the play setup on next prepare
++        cs_8409_boot_setup(codec);
++        spec->headset_phase = 2;
++        spec->play_init = 0;
++        spec->capture_init = 0;
++        spec->play_init_count = 0;
++        spec->capture_init_count = 0;
+         myprintk("snd_hda_intel: end cs_8409_apple_resume\n");
+         return 0;
+ }

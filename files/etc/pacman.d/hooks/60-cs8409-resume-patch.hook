@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = usr/src/snd-hda-macbookpro-*/patch_cirrus/cirrus_apple.h
+
+[Action]
+Description = Re-applying MacBookPro14,1 CS8409 resume fix...
+When = PostTransaction
+Exec = /usr/local/bin/cs8409-resume-patch
