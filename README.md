@@ -31,7 +31,7 @@ Both deep sleep and s2idle hung with the journal ending at `PM: suspend entry`. 
 
 [`apple-thunderbolt-detach`](files/usr/lib/systemd/system-sleep/apple-thunderbolt-detach) removes the controller's upstream bridge (`8086:1578`) before sleep, which takes the whole Thunderbolt tree with it, and rescans the PCI bus on wake. Deep sleep then works with no change to the sleep mode or CPU idle states. The trade-off: anything plugged into USB-C is disconnected and reconnected across each sleep.
 
-Reported in [omacom/omarchy#15630](https://github.com/omacom/omarchy/issues/15630).
+Reported in [omacom/omarchy#15630](https://github.com/omacom/omarchy/issues/15630); proposed for Omarchy in [omacom/omarchy#15756](https://github.com/omacom/omarchy/pull/15756). Once that ships, Omarchy installs the same hook under the same name and this copy becomes redundant.
 
 ### Speakers
 
